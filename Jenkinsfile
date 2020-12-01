@@ -1,9 +1,5 @@
 pipeline {
-	agent {
-		docker {
-			image 'composer:latest'
-		}
-	}
+	agent any
 	stages {
 		stage('Checkout SCM') {
 			steps {
@@ -15,16 +11,6 @@ pipeline {
                 		dependencyCheck additionalArguments: '--format HTML --format XML --suppression suppression.xml', odcInstallation: 'OWASP'
             		}
         	}
-		stage('Install') {
-			steps {
-				sh 'composer install'
-			}
-		}
-		stage('PHPunit') {
-			steps {
-                		sh"./vendor/bin/phpunit tests --log-junit logs/unitreport.xml -c tests/phpunit.xml tests"
-            		}
-		}
 		stage('Code Quality Check via SonarQube') {
 			steps {
 				script {
@@ -40,9 +26,6 @@ pipeline {
 	post {
         	success {
             		dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-        	}
-		always{
-            		junit testResults: 'logs/unitreport.xml'
         	}
     	}
 }
