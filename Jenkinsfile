@@ -25,6 +25,17 @@ pipeline {
                 		sh"./vendor/bin/phpunit tests --log-junit logs/unitreport.xml -c tests/phpunit.xml tests"
             		}
 		}
+		stage('Code Quality Check via SonarQube') {
+			steps {
+				script {
+					def scannerHome = tool 'SonarQube';
+					withSonarQubeEnv() {
+						sh "${tool("SonarQube")}/bin/sonar-scanner -Dsonar.projectKey=yongyongjiejie -Dsonar.sources=. -Dsonar.host.url=http://192.168.174.128:9000 -Dsonar.login=9224c8fcec9e4269226502fbc34576aadd8907"
+						}
+					}
+				}
+		}
+
 	}	
 	post {
         	success {
